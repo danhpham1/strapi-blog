@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "games",
+  "info": {
+    "name": "Games",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "game_name": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "blogs": {
+      "via": "game",
+      "collection": "blogs"
+    },
+    "game_slug": {
+      "type": "string"
+    }
+  }
+}

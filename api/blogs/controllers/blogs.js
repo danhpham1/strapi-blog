@@ -5,11 +5,15 @@
  * to customize this controller
  */
 const { sanitizeEntity } = require('strapi-utils');
+const slugify = require('slugify');
 
 module.exports = {
     async blogsWithCategory(ctx){
         let categoryQuery;
         let blogs;
+        let total = 0;
+        let limit = ctx.query.limit ?? 10;
+        let current_page = ctx.query.current_page ?? 1;
 
         if(!ctx.params.game){
             return ctx.throw(400, 'Some Error');
@@ -27,12 +31,23 @@ module.exports = {
         if(categoryQuery && categoryQuery.length >= 1){
             blogs = await strapi.services.blogs.getBlogsWithParams({
                 category:categoryQuery[0].id,
-                game:gameQuery[0].id
-            })
+                game:gameQuery[0].id,
+                _limit:limit,
+                _start: (current_page - 1) * limit 
+            });
+            total = await strapi.services.blogs.countBlogsWithParams({
+                category: categoryQuery[0].id,
+                game: gameQuery[0].id,
+            });
         }else{
             blogs = await strapi.services.blogs.getBlogsWithParams({
-                game: gameQuery[0].id
-            })
+                game: gameQuery[0].id,
+                _limit: limit,
+                _start: (current_page - 1)*limit 
+            });
+            total = await strapi.services.blogs.countBlogsWithParams({
+                game: gameQuery[0].id,
+            });
         }
 
         return ctx.send({
@@ -52,8 +67,17 @@ module.exports = {
                     delete blog.game;
                 }
 
+                if (blog.content){
+                    delete blog.content;
+                }
+
+                blog.category_slug = slugify(blog.category_name, { replacement: "-", lower: true });
+
                 return blog;
-            })
+            }),
+            total:total,
+            limit:+limit,
+            current_page:+current_page
         })
     },
 

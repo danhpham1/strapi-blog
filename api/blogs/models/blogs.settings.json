@@ -29,7 +29,8 @@
       "type": "text"
     },
     "content": {
-      "type": "richtext"
+      "type": "richtext",
+      "required": true
     },
     "slug": {
       "type": "string"

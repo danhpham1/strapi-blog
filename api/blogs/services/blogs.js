@@ -8,36 +8,47 @@
 const { sanitizeEntity } = require('strapi-utils');
 
 module.exports = {
-    async getBlogsWithParams(params){
-        const results = await strapi.query('blogs').find({ ...params, _sort:'created_at:desc'});
+    async getBlogsWithParams(params) {
+        const results = await strapi.query('blogs').find({ ...params, _sort: 'created_at:desc' });
         return results || null;
     },
 
-    async getHomeData(gameId){
-        if(gameId == 'tantamquoc'){
+    async countBlogsWithParams(params){
+        const results = await strapi.query('blogs').count({ ...params });
+        return results || null;
+    },
+
+    async getHomeData(gameId) {
+        if (gameId == 'tantamquoc') {
             const knex = strapi.connections.default;
             const result = await knex
-                                .from('blogs')
-                                .join('games', 'blogs.game', '=', 'games.id')
-                                .join('categories', 'blogs.category', '=', 'categories.id')
-                                .select('blogs.id', 'title', 'sub_content', 'blogs.created_at', 'slug', 'game_name', 'game_slug', 'category_name','category_slug')
-                                .where('game_slug', gameId)
-                                .orderBy('created_at','desc');
+                .from('blogs')
+                .join('games', 'blogs.game', '=', 'games.id')
+                .join('categories', 'blogs.category', '=', 'categories.id')
+                .select('blogs.id', 'title', 'sub_content', 'blogs.created_at', 'slug', 'game_name', 'game_slug', 'category_name', 'category_slug')
+                .where('game_slug', gameId)
+                .orderBy('created_at', 'desc');
             return result || [];
-        }   
+        }
         return [];
     },
 
-    async getPostDetail(gameId,slug){
-        if(gameId == 'tantamquoc'){
+    async getPostDetail(gameId, slug) {
+        if (gameId == 'tantamquoc') {
             const knex = strapi.connections.default;
-            const results = await knex.select().from('blogs').where('game',2).where('slug',slug);
+            const results = await knex
+                .from('blogs')
+                .join('games','games.id','=','blogs.game')
+                .join('categories', 'blogs.category', '=', 'categories.id')
+                .select()
+                .where('game_slug',gameId)
+                .where('slug', slug);
             return results || null;
         }
         return null;
     },
 
-    async transformData(data){
+    async transformData(data) {
         let results = {
             tin_tuc: [],
             cam_nang: [],
@@ -78,7 +89,7 @@ module.exports = {
         })
 
         return {
-            tin_tuc:results.tin_tuc.slice(0,4),
+            tin_tuc: results.tin_tuc.slice(0, 4),
             cam_nang: results.cam_nang.slice(0, 4),
             su_kien: results.su_kien.slice(0, 4),
             huong_dan: results.huong_dan.slice(0, 4)

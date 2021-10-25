@@ -15,7 +15,19 @@ module.exports = {
    * Simple example.
    * Every monday at 1am.
    */
-  // '0 1 * * 1': () => {
-  //
-  // }
+  '* * 1 * * *': async () => {
+    const draftArticleToPublish = await strapi.api.blogs.services.blogs.find({
+      _publicationState: 'preview', // preview returns both draft and published entries
+      published_at_null: true,      // so we add another condition here to filter entries that have not been published
+      publish_at_lt: new Date(),
+    });
+
+    // update published_at of articles
+    await Promise.all(draftArticleToPublish.map(blog => {
+      return strapi.api.blogs.services.blogs.update(
+        { id: blog.id },
+        { published_at: new Date() }
+      );
+    }));
+  },
 };

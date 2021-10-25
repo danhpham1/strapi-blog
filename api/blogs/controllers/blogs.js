@@ -101,6 +101,10 @@ module.exports = {
 
         const resultQuery = await strapi.services.blogs.getPostDetail(ctx.params.game, ctx.query.slug);
 
+        if(resultQuery[0]?.content && resultQuery.length >= 1){
+            resultQuery[0].content = resultQuery[0].content.replace(/src=\"/g, `src="https://tamquoc-api.itap.vn/`)
+        }
+
         ctx.status = 200;
 
         return ctx.send({

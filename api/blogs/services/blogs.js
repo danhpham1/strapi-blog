@@ -39,7 +39,6 @@ module.exports = {
             const results = await knex
                 .from('blogs')
                 .join('games','games.id','=','blogs.game')
-                .join('categories', 'blogs.category', '=', 'categories.id')
                 .select()
                 .where('game_slug',gameId)
                 .where('slug', slug);
@@ -54,7 +53,6 @@ module.exports = {
             cam_nang: [],
             su_kien: [],
             huong_dan: []
-
         }
 
         data.map(entity => {

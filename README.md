@@ -11,3 +11,7 @@ run cmd `npm run developer` or `NODE_ENV=dev npm run develop`,
 
 #run project in production 
 run cmd `npm run start`
+
+#username and password
+admin@gmail.com
+Hanhphucao1
